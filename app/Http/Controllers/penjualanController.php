@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Penjualan;
 use App\Models\Produk;
+use App\Models\Pelanggan;
 
 class penjualanController extends Controller
 {
@@ -16,9 +17,10 @@ class penjualanController extends Controller
         return view('pages.dashboard', compact('penjualans'));
     }
 
-    public function detailProduk()
+    public function detailData()
     {
-        $produks = produk::all();
-        return view('pages.penjualan.tambah', compact('produks'));
+        $produks = Produk::all();
+        $pelanggans = Pelanggan::all();
+        return view('pages.penjualan.tambah', compact('produks', 'pelanggans'));
     }
 }

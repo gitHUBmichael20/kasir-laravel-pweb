@@ -84,9 +84,9 @@
                         <div class="absolute top-3 right-3">
                             <span @class([
                                 'text-white px-2.5 py-1 rounded-full text-xs font-semibold',
-                                'bg-green-500' => $produk->Stok > 10,
-                                'bg-yellow-500' => $produk->Stok > 0 && $produk->Stok <= 10,
-                                'bg-red-500' => $produk->Stok <= 0,
+                                'bg-[#6D67E4]' => $produk->Stok > 10,
+                                'bg-[#FF6500]' => $produk->Stok > 0 && $produk->Stok <= 10,
+                                'bg-[#F67280]' => $produk->Stok <= 0,
                             ])>
                                 Stok: {{ $produk->Stok }}
                             </span>
@@ -113,11 +113,13 @@
                         <!-- Action Buttons -->
                         <div class="flex justify-between items-center gap-2">
                             <!-- Detail Button -->
-                            <button
-                                class="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center justify-center gap-1">
-                                <i class="fas fa-eye text-xs"></i>
-                                <span>Detail</span>
-                            </button>
+                            <a href="{{ route('produk.detail')}}">
+                                <button
+                                    class="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center justify-center gap-1">
+                                    <i class="fas fa-eye text-xs"></i>
+                                    <span>Detail</span>
+                                </button>
+                            </a>
 
                             <!-- Edit Button -->
                             <button

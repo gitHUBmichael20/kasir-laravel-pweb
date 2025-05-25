@@ -33,6 +33,7 @@ Route::prefix('pelanggan')->group(function () {
 
 Route::prefix('produk')->group(function () {
     Route::get('/all', [produkController::class, 'index'])->name('produk.all');
+    Route::get('/detail', function () { return view('pages.produk.detail'); })->name('produk.detail');
     Route::get('/images/{filename}', [StorageController::class, 'produkImage'])->name('produk.gambar');
     Route::post('/store', [produkController::class, 'store'])->name('produk.store');
     Route::put('/update/{id}', [produkController::class, 'update'])->name('produk.update');
@@ -40,7 +41,7 @@ Route::prefix('produk')->group(function () {
 });
 
 Route::prefix('penjualan')->group(function () {
-    Route::get('/', [PenjualanController::class, 'detailProduk'])->name('penjualan.all');
+    Route::get('/', [PenjualanController::class, 'detailData'])->name('penjualan.all');
     // Route::get('/', function () { return view('pages.penjualan.tambah'); })->name('penjualan.all');
     // Route::get('/images/{filename}', [StorageController::class, 'penjualanImage'])->name('penjualan.gambar');
     // Route::post('/store', [PenjualanController::class, 'store'])->name('penjualan.store');

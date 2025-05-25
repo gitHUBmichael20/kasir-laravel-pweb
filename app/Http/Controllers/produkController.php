@@ -15,6 +15,12 @@ class produkController extends Controller
         return view('pages.produk.list', compact('produks'));
     }
 
+    public function show($id)
+    {
+        $produkDetail = Produk::findOrFail($id);
+        return view('pages.produk.detail', compact('produkDetail'));
+    }
+
     public function destroy($id)
     {
         try {
