@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\produk;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
+use App\Models\Detailpenjualan;
 
 class produkController extends Controller
 {
@@ -15,10 +17,15 @@ class produkController extends Controller
         return view('pages.produk.list', compact('produks'));
     }
 
-    public function show($id)
+    public function showProduct($id)
     {
         $produkDetail = Produk::findOrFail($id);
-        return view('pages.produk.detail', compact('produkDetail'));
+
+        $transaksiProduk = Detailpenjualan::where('ProdukID', $id)
+            ->with(['penjualan.pelanggan', 'produk'])
+            ->simplePaginate(10);
+
+        return view('pages.produk.detail', compact('produkDetail', 'transaksiProduk'));
     }
 
     public function destroy($id)
@@ -26,15 +33,11 @@ class produkController extends Controller
         try {
             $produk = Produk::findOrFail($id);
             $produk->delete();
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Produk deleted successfully'
-            ], 200);
+            Session::flash('success', 'Produk berhasil dihapus!');
+            return redirect()->route('produk.all');
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Failed to delete produk: ' . $e->getMessage()
-            ], 404);
+            Session::flash('error', 'Gagal menghapus produk: ' . $e->getMessage());
+            return redirect()->route('produk.all');
         }
     }
 
@@ -69,6 +72,12 @@ class produkController extends Controller
                 'message' => 'Failed to create produk: ' . $e->getMessage()
             ], 400);
         }
+    }
+
+    public function sendDatatoEdit($id)
+    {
+        $produk = Produk::findOrFail($id);
+        return view('pages.produk.edit', compact('produk'));
     }
 
     public function update(Request $request, $id)

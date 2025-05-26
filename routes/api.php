@@ -33,11 +33,13 @@ Route::prefix('pelanggan')->group(function () {
 
 Route::prefix('produk')->group(function () {
     Route::get('/all', [produkController::class, 'index'])->name('produk.all');
-    Route::get('/detail', function () { return view('pages.produk.detail'); })->name('produk.detail');
+    Route::get('/tambah', function () { return view('pages.produk.tambah'); })->name('produk.tambah');
+    Route::get('/detail/{id}', [produkController::class, 'showProduct'])->name('produk.detail');
     Route::get('/images/{filename}', [StorageController::class, 'produkImage'])->name('produk.gambar');
+    Route::get('/edit-product/{id}', [produkController::class, 'sendDatatoEdit'])->name('produk.edit');
     Route::post('/store', [produkController::class, 'store'])->name('produk.store');
     Route::put('/update/{id}', [produkController::class, 'update'])->name('produk.update');
-    Route::delete('/delete/{id}', [produkController::class, 'destroy'])->name('produk.destroy');
+    Route::delete('/delete/{id}', [produkController::class, 'destroy'])->name('produk.delete');
 });
 
 Route::prefix('penjualan')->group(function () {

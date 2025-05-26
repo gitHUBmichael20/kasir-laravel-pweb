@@ -6,7 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>List Produk</title>
-    @vite('resources/css/app.css')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @if (session('success'))
+        <meta name="success-message" content="{{ session('success') }}">
+    @endif
+    @if (session('error'))
+        <meta name="error-message" content="{{ session('error') }}">
+    @endif
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
 <body class="bg-white sm:ml-64 p-4 dark:bg-gray-900">
@@ -15,7 +22,7 @@
     <h1 class="text-3xl font-semibold text-left my-4 text-gray-900 dark:text-white">List Produk || Kasir Michael</h1>
 
     <div class="flex justify-between items-center w-full mb-4">
-        <button type="button"
+        <button type="button" onclick="window.location.href='{{ route('produk.tambah') }}'"
             class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
             Tambah Produk
         </button>
@@ -50,95 +57,108 @@
     </div>
 
     <div class="container mx-auto px-4 py-6">
-        <!-- Grid Layout - Responsif -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            @foreach ($produks as $produk)
-                <div
-                    class="bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-200 dark:border-gray-700">
-                    <!-- Header Card dengan Gambar -->
-                    <div class="relative">
-                        @if (empty($produk->foto_produk))
-                            <div
-                                class="h-48 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center rounded-t-xl">
-                                <div class="text-center">
-                                    <i class="fas fa-image text-4xl text-gray-400 dark:text-gray-500 mb-2"></i>
-                                    <p class="text-red-500 italic font-semibold text-sm">Foto Tidak Tersedia</p>
+
+        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+            <table class="w-full text-sm text-center rtl:text-right text-gray-500 dark:text-gray-400">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                        <th scope="col" class="p-4">
+                            <div class="flex items-center">
+                                <input id="checkbox-all-search" type="checkbox"
+                                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                <label for="checkbox-all-search" class="sr-only">checkbox</label>
+                            </div>
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            ID Produk
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Produk name
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Stok Barang
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Harga Barang
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Ketersediaan
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Gambar Barang
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($produks as $produk)
+                        <tr
+                            class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
+                            <td class="w-4 p-4">
+                                <div class="flex items-center">
+                                    <input id="checkbox-table-search-1" type="checkbox"
+                                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                    <label for="checkbox-table-search-1" class="sr-only">checkbox</label>
                                 </div>
-                            </div>
-                        @else
-                            <div class="h-48 overflow-hidden rounded-t-xl">
-                                <img src="{{ route('produk.gambar', $produk->foto_produk) }}"
-                                    alt="{{ $produk->NamaProduk }}"
-                                    class="w-full h-full object-cover transition-transform duration-300 hover:scale-105">
-                            </div>
-                        @endif
-
-                        <!-- Badge ID Produk -->
-                        <div class="absolute top-3 left-3">
-                            <span class="bg-blue-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
-                                ID: {{ $produk->ProdukID }}
-                            </span>
-                        </div>
-
-                        <!-- Badge Stok -->
-                        <div class="absolute top-3 right-3">
-                            <span @class([
-                                'text-white px-2.5 py-1 rounded-full text-xs font-semibold',
-                                'bg-[#6D67E4]' => $produk->Stok > 10,
-                                'bg-[#FF6500]' => $produk->Stok > 0 && $produk->Stok <= 10,
-                                'bg-[#F67280]' => $produk->Stok <= 0,
-                            ])>
-                                Stok: {{ $produk->Stok }}
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- Body Card -->
-                    <div class="p-5">
-                        <!-- Nama Produk -->
-                        <h3 class="text-md font-bold text-gray-900 dark:text-white mb-2 min-h-[3.5rem]">
-                            {{ $produk->NamaProduk }}
-                        </h3>
-
-                        <!-- Harga -->
-                        <div class="mb-4">
-                            <span class="text-2xl font-bold text-green-600 dark:text-green-400">
-                                Rp{{ number_format($produk->Harga, 0, ',', '.') }}
-                            </span>
-                        </div>
-
-                        <!-- Divider -->
-                        <hr class="border-gray-200 dark:border-gray-600 mb-4">
-
-                        <!-- Action Buttons -->
-                        <div class="flex justify-between items-center gap-2">
-                            <!-- Detail Button -->
-                            <a href="{{ route('produk.detail')}}">
-                                <button
-                                    class="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center justify-center gap-1">
-                                    <i class="fas fa-eye text-xs"></i>
-                                    <span>Detail</span>
-                                </button>
-                            </a>
-
-                            <!-- Edit Button -->
-                            <button
-                                class="flex-1 bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center justify-center gap-1">
-                                <i class="fas fa-edit text-xs"></i>
-                                <span>Edit</span>
-                            </button>
-
-                            <!-- Delete Button -->
-                            <button
-                                class="flex-1 bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center justify-center gap-1">
-                                <i class="fas fa-trash text-xs"></i>
-                                <span>Delete</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            @endforeach
+                            </td>
+                            <td class="px-6 py-4">
+                                {{ $produk->ProdukID }}
+                            </td>
+                            <th scope="row"
+                                class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                {{ $produk->NamaProduk }}
+                            </th>
+                            <td class="px-6 py-4">
+                                @php
+                                    $harga = 'Rp ' . number_format($produk->Harga, 0, ',', '.');
+                                @endphp
+                                {{ $harga }}
+                            </td>
+                            <td class="px-6 py-4">
+                                {{ $produk->Stok }}
+                            </td>
+                            <td class="px-6 py-4">
+                                @if ($produk->Stok > 0)
+                                    <span
+                                        class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded">Tersedia</span>
+                                @else
+                                    <span
+                                        class="bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded">Tidak
+                                        Tersedia</span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                <img class="inline-block w-14 h-14 rounded-full"
+                                    src="{{ route('produk.gambar', $produk->foto_produk) }}"
+                                    alt="{{ $produk->NamaProduk }}">
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex flex-row items-center gap-3">
+                                    <a href="{{ route('produk.detail', $produk->ProdukID) }}"
+                                        class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Detail</a>
+                                    <a href="{{ route('produk.edit', $produk->ProdukID) }}"
+                                        class="font-medium text-yellow-600 dark:text-yellow-500 hover:underline">Edit</a>
+                                    <form id="deleteForm-{{ $produk->ProdukID }}"
+                                        action="{{ route('produk.delete', $produk->ProdukID) }}" method="POST"
+                                        class="inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="button"
+                                            onclick="window.confirmDelete({{ $produk->ProdukID }})"
+                                            class="font-medium text-red-600 dark:text-red-500 hover:underline">
+                                            Remove
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
+
 
         <!-- Empty State jika tidak ada produk -->
         @if (count($produks) == 0)

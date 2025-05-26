@@ -15,7 +15,7 @@ class PenjualanSeeder extends Seeder
         // Pastikan ada pelanggan yang sudah dibuat sebelumnya
         $pelangganIds = DB::table('pelanggan')->pluck('PelangganID')->toArray();
 
-        for ($i = 1; $i <= 5; $i++) {
+        for ($i = 1; $i <= 500; $i++) {
             DB::table('penjualan')->insert([
                 'TanggalPenjualan' => $faker->dateTimeBetween('-1 month', 'now')->format('Y-m-d'),
                 'TotalHarga' => 0, // Akan diupdate setelah detailpenjualan dibuat
