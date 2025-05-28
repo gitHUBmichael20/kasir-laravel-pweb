@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pelanggan;
+use App\Models\Penjualan;
+use Illuminate\Support\Facades\DB;
+use App\Models\Detailpenjualan;
 use Illuminate\Http\Request;
 
 class pelangganController extends Controller
@@ -13,6 +16,29 @@ class pelangganController extends Controller
     {
         $pelanggans = Pelanggan::all();
         return view('pages.pelanggan.list', compact('pelanggans'));
+    }
+
+    public function showPelanggan($id)
+    {
+        $pelangganDetail = Pelanggan::findOrFail($id);
+        $transaksiPelanggan = Detailpenjualan::query()
+            ->select(
+                'detailpenjualan.PenjualanID',
+                'penjualan.TanggalPenjualan',
+                'penjualan.TotalHarga',      
+                DB::raw('SUM(detailpenjualan.JumlahProduk) AS total_jumlah_produk_dari_detail'),
+                DB::raw('SUM(detailpenjualan.Subtotal) AS total_subtotal_dari_detail')
+            )
+            ->join('penjualan', 'detailpenjualan.PenjualanID', '=', 'penjualan.PenjualanID')
+            ->where('penjualan.PelangganID', $id)
+            ->groupBy(
+                'detailpenjualan.PenjualanID',
+                'penjualan.TanggalPenjualan',
+                'penjualan.TotalHarga'
+            )
+            ->simplePaginate(5);
+
+        return view('pages.pelanggan.detail', compact('pelangganDetail', 'transaksiPelanggan'));
     }
 
     public function destroy($id)

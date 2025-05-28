@@ -2,13 +2,18 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Penjualan extends Model
 {
+    use HasFactory;
+
     protected $table = 'penjualan';
     protected $primaryKey = 'PenjualanID';
-    public $timestamps = true;
+    public $timestamps = false;
 
     protected $fillable = [
         'TanggalPenjualan',
@@ -16,13 +21,19 @@ class Penjualan extends Model
         'PelangganID',
     ];
 
-    public function pelanggan()
+    protected $casts = [
+        'TanggalPenjualan' => 'datetime', // Ini PENTING!
+        'TotalHarga' => 'decimal:2',
+        'PelangganID' => 'integer',
+    ];
+
+    public function detailpenjualans(): HasMany
     {
-        return $this->belongsTo(Pelanggan::class, 'PelangganID', 'PelangganID');
+        return $this->hasMany(DetailPenjualan::class, 'PenjualanID', 'PenjualanID');
     }
 
-    public function detailpenjualans()
+    public function pelanggan(): BelongsTo
     {
-        return $this->hasMany(Detailpenjualan::class, 'PenjualanID', 'PenjualanID');
+        return $this->belongsTo(Pelanggan::class, 'PelangganID', 'PelangganID');
     }
 }

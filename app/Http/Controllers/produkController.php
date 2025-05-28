@@ -5,11 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\produk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Detailpenjualan;
 
 class produkController extends Controller
 {
-    //
+
 
     public function index()
     {
@@ -28,14 +29,33 @@ class produkController extends Controller
         return view('pages.produk.detail', compact('produkDetail', 'transaksiProduk'));
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         try {
             $produk = Produk::findOrFail($id);
             $produk->delete();
+
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Produk berhasil dihapus!'
+                ], 200);
+            }
+
+
             Session::flash('success', 'Produk berhasil dihapus!');
             return redirect()->route('produk.all');
         } catch (\Exception $e) {
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Gagal menghapus produk: ' . $e->getMessage()
+                ], 400);
+            }
+
+
             Session::flash('error', 'Gagal menghapus produk: ' . $e->getMessage());
             return redirect()->route('produk.all');
         }
@@ -48,10 +68,10 @@ class produkController extends Controller
                 'NamaProduk' => 'required|string|max:255',
                 'Harga' => 'required|numeric',
                 'Stok' => 'required|integer',
-                'foto_produk' => 'nullable|image|max:2048',
+                'foto_produk' => 'nullable|image|max:102400',
             ]);
 
-            // Handle file upload if present
+            $filename = null;
             if ($request->hasFile('foto_produk')) {
                 $file = $request->file('foto_produk');
                 $filename = time() . '.' . $file->getClientOriginalExtension();
@@ -60,17 +80,32 @@ class produkController extends Controller
             }
 
             $produk = Produk::create($validatedData);
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Produk berhasil ditambahkan!',
+                    'data' => $produk
+                ], 201);
+            }
 
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Produk created successfully',
-                'data' => $produk
-            ], 201);
+            Session::flash('success', 'Produk berhasil ditambahkan!');
+            return redirect()->route('produk.all');
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Failed to create produk: ' . $e->getMessage()
-            ], 400);
+
+            if (isset($filename) && Storage::disk('public')->exists('produk/' . $filename)) {
+                Storage::disk('public')->delete('produk/' . $filename);
+            }
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Gagal menambahkan produk: ' . $e->getMessage()
+                ], 400);
+            }
+
+
+            Session::flash('error', 'Gagal menambahkan produk: ' . $e->getMessage());
+            return redirect()->route('produk.all');
         }
     }
 
@@ -83,35 +118,74 @@ class produkController extends Controller
     public function update(Request $request, $id)
     {
         try {
+
             $produk = Produk::findOrFail($id);
+
 
             $validatedData = $request->validate([
                 'NamaProduk' => 'required|string|max:255',
                 'Harga' => 'required|numeric',
                 'Stok' => 'required|integer',
-                'foto_produk' => 'nullable|image|max:2048',
+
+
+
+                'foto_produk' => 'nullable|image|max:10240',
             ]);
 
-            // Handle file upload if present
+
+            $filename = $produk->foto_produk;
+
             if ($request->hasFile('foto_produk')) {
+
+                if ($produk->foto_produk && Storage::disk('public')->exists('produk/' . $produk->foto_produk)) {
+                    Storage::disk('public')->delete('produk/' . $produk->foto_produk);
+                }
+
                 $file = $request->file('foto_produk');
-                $filename = time() . '.' . $file->getClientOriginalExtension();
+
+                $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
                 $file->storeAs('public/produk', $filename);
                 $validatedData['foto_produk'] = $filename;
+            } else {
+                if (!$request->has('foto_produk') || $request->input('foto_produk') === null) {
+                    unset($validatedData['foto_produk']);
+                }
+            }
+            $produk->update($validatedData);
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Produk berhasil diperbarui!',
+                    'data' => $produk
+                ], 200);
+            }
+            Session::flash('success', 'Produk berhasil diperbarui!');
+            return redirect()->route('produk.all');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Validasi gagal: ' . $e->getMessage(),
+                    'errors' => $e->errors()
+                ], 422);
             }
 
-            $produk->update($validatedData);
-
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Produk updated successfully',
-                'data' => $produk
-            ], 200);
+            return redirect()->back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Failed to update produk: ' . $e->getMessage()
-            ], 404);
+            if (isset($filename) && $filename !== $produk->getOriginal('foto_produk') && Storage::disk('public')->exists('produk/' . $filename)) {
+                Storage::disk('public')->delete('produk/' . $filename);
+            }
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Gagal memperbarui produk: ' . $e->getMessage()
+                ], 400);
+            }
+
+            Session::flash('error', 'Gagal memperbarui produk: ' . $e->getMessage());
+            return redirect()->route('produk.all');
         }
     }
 }

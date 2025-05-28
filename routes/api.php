@@ -25,7 +25,9 @@ Route::get('/user', function (Request $request) {
 
 Route::prefix('pelanggan')->group(function () {
     Route::get('/all', [PelangganController::class, 'index'])->name('pelanggan.all');
+    Route::get('/tambah', function () { return view('pages.pelanggan.tambah'); })->name('pelanggan.tambah');
     Route::get('/images/{filename}', [StorageController::class, 'pelangganImage'])->name('pelanggan.gambar');
+    Route::get('/detail/{id}', [PelangganController::class, 'showPelanggan'])->name('pelanggan.detail');
     Route::post('/store', [PelangganController::class, 'store'])->name('pelanggan.store');
     Route::put('/update/{id}', [PelangganController::class, 'update'])->name('pelanggan.update');
     Route::delete('/delete/{id}', [PelangganController::class, 'destroy'])->name('pelanggan.destroy');
@@ -44,9 +46,10 @@ Route::prefix('produk')->group(function () {
 
 Route::prefix('penjualan')->group(function () {
     Route::get('/', [PenjualanController::class, 'detailData'])->name('penjualan.all');
+    Route::post('/store', [PenjualanController::class, 'store'])->name('penjualan.store');
+
     // Route::get('/', function () { return view('pages.penjualan.tambah'); })->name('penjualan.all');
     // Route::get('/images/{filename}', [StorageController::class, 'penjualanImage'])->name('penjualan.gambar');
-    // Route::post('/store', [PenjualanController::class, 'store'])->name('penjualan.store');
     // Route::put('/update/{id}', [PenjualanController::class, 'update'])->name('penjualan.update');
     // Route::delete('/delete/{id}', [PenjualanController::class, 'destroy'])->name('penjualan.destroy');
 });

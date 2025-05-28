@@ -1,16 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layout.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Detail Produk {{$produkDetail->NamaProduk}}</title>
-    @vite('resources/css/app.css')
-</head>
+@section('title', 'Detail Produk')
 
-<body class="bg-white dark:bg-gray-900 sm:ml-64 p-4 overflow-hidden">
-    @include('components.navbar')
+@section('content')
+
+<div class="bg-white dark:bg-gray-900 sm:ml-64 p-4 overflow-hidden">
 
     <nav class="flex px-5 py-3 text-gray-700 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-800 dark:border-gray-700"
         aria-label="Breadcrumb">
@@ -52,7 +46,9 @@
         </ol>
     </nav>
 
-    <section class="py-2 bg-white md:py-16 dark:bg-gray-900 antialiased">
+    {{-- Deskripsi Produk --}}
+
+    <section class="py-2  bg-white md:py-16 dark:bg-gray-900 antialiased">
         <div class="max-w-screen-xl px-4 mx-auto 2xl:px-0">
             <div class="lg:grid lg:grid-cols-2 lg:gap-8 xl:gap-16">
                 <div class="shrink-0 max-w-md lg:max-w-lg mx-auto">
@@ -64,7 +60,7 @@
                     @endif
                 </div>
 
-                <div class="mt-2">
+                <div class="mt-2 border-2 border-gray-300 dark:border-gray-600 rounded-xl p-4">
                     <h1 class="text-xl font-semibold text-gray-900 sm:text-2xl dark:text-white">
                         {{ $produkDetail->NamaProduk }}
                     </h1>
@@ -141,6 +137,8 @@
             </div>
         </div>
     </section>
-</body>
+</div>
 
-</html>
+@endsection
+
+@include('layout.tambah-transaksi')

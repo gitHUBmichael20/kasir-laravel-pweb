@@ -17,8 +17,15 @@ class Pelanggan extends Model
         'foto_pelanggan',
     ];
 
-    public function penjualans()
+    public function pelanggan()
     {
-        return $this->hasMany(Penjualan::class, 'PelangganID', 'PelangganID');
+        return $this->belongsTo(Pelanggan::class, 'PelangganID', 'PelangganID');
+    }
+
+    public function detailpenjualans()
+    {
+        // Pastikan 'PenjualanID' (argumen kedua) adalah foreign key di tabel 'detailpenjualan'
+        // dan 'PenjualanID' (argumen ketiga) adalah local key di tabel 'penjualan'
+        return $this->hasMany(Detailpenjualan::class, 'PenjualanID', 'PenjualanID');
     }
 }

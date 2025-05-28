@@ -21,4 +21,6 @@ use App\Http\Controllers\penjualanController;
 
 Route::get('/', [PenjualanController::class, 'index'])->name('pages.dashboard');
 
+Route::get('/penjualan/struk-belanja/{id}', [PenjualanController::class, 'showReceipt'])->name('penjualan.receipt.pdf');
+
 
