@@ -12,9 +12,20 @@ class produkController extends Controller
 {
 
 
-    public function index()
+    public function index(Request $request)
     {
-        $produks = produk::all();
+        $query = Produk::query();
+
+
+        if ($request->has('search')) {
+            $searchTerm = $request->search;
+            $query->where('NamaProduk', 'like', '%' . $searchTerm . '%')
+                ->orWhere('Harga', 'like', '%' . $searchTerm . '%');
+                
+        }
+
+        $produks = $query->get();
+
         return view('pages.produk.list', compact('produks'));
     }
 
@@ -118,40 +129,36 @@ class produkController extends Controller
     public function update(Request $request, $id)
     {
         try {
-
             $produk = Produk::findOrFail($id);
-
 
             $validatedData = $request->validate([
                 'NamaProduk' => 'required|string|max:255',
                 'Harga' => 'required|numeric',
                 'Stok' => 'required|integer',
-
-
-
                 'foto_produk' => 'nullable|image|max:10240',
             ]);
-
 
             $filename = $produk->foto_produk;
 
             if ($request->hasFile('foto_produk')) {
-
+                // Delete old image if exists
                 if ($produk->foto_produk && Storage::disk('public')->exists('produk/' . $produk->foto_produk)) {
                     Storage::disk('public')->delete('produk/' . $produk->foto_produk);
                 }
 
                 $file = $request->file('foto_produk');
-
                 $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
                 $file->storeAs('public/produk', $filename);
                 $validatedData['foto_produk'] = $filename;
             } else {
+                // If no new file uploaded, keep the existing filename
                 if (!$request->has('foto_produk') || $request->input('foto_produk') === null) {
                     unset($validatedData['foto_produk']);
                 }
             }
+
             $produk->update($validatedData);
+
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'status' => 'success',
@@ -159,20 +166,21 @@ class produkController extends Controller
                     'data' => $produk
                 ], 200);
             }
+
             Session::flash('success', 'Produk berhasil diperbarui!');
             return redirect()->route('produk.all');
         } catch (\Illuminate\Validation\ValidationException $e) {
-
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Validasi gagal: ' . $e->getMessage(),
+                    'message' => 'Validasi gagal!',
                     'errors' => $e->errors()
                 ], 422);
             }
 
             return redirect()->back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
+            // Clean up uploaded file if it exists and operation failed
             if (isset($filename) && $filename !== $produk->getOriginal('foto_produk') && Storage::disk('public')->exists('produk/' . $filename)) {
                 Storage::disk('public')->delete('produk/' . $filename);
             }
@@ -181,7 +189,7 @@ class produkController extends Controller
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Gagal memperbarui produk: ' . $e->getMessage()
-                ], 400);
+                ], 500);
             }
 
             Session::flash('error', 'Gagal memperbarui produk: ' . $e->getMessage());

@@ -102,7 +102,7 @@
                 </div>
 
                 <div id="bill-product"
-                    class="w-full md:w-lg px-4 py-8 bg-white dark:bg-gray-800 shadow-lg rounded-xl overflow-y-auto md:ml-4 flex-shrink-0">
+                    class="w-full h-fit md:w-lg px-4 py-8 bg-white dark:bg-gray-800 shadow-lg rounded-xl overflow-y-auto md:ml-4 flex-shrink-0">
                     <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">Your Cart Summary</h2>
 
                     <div class="mb-6">

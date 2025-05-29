@@ -56,7 +56,7 @@
                             <span class="block w-full h-48 bg-gray-300 text-white"> Image not available</span>
                         @endif
                     </div>
-                    <div class="mt-2 border-2 border-gray-300 dark:border-gray-600 rounded-xl p-4 w-fit">
+                    <div class="mt-2 border-2 border-gray-300 dark:border-gray-600 rounded-xl p-4 w-fit max-w-xl">
                         <h1 class="text-xl font-semibold text-gray-900 sm:text-2xl dark:text-white">
                             {{ $pelangganDetail->NamaPelanggan }}
                         </h1>
@@ -75,7 +75,7 @@
                                 {{ $transaksiPelanggan->sum('total_jumlah_produk_dari_detail') }} Pembelian
                             </span>
                         </div>
-                        <div class="max-h-80 overflow-x-auto shadow-md sm:rounded-lg w-fit"
+                        <div class="max-h-80 overflow-x-scroll shadow-md sm:rounded-lg max-w-full"
                             style="scrollbar-width: none;::-webkit-scrollbar {width: 0px; background: transparent;}">
                             @if ($transaksiPelanggan->isEmpty())
                                 <p class="text-center py-4 text-gray-600 dark:text-gray-400">Belum ada riwayat penjualan
@@ -100,6 +100,9 @@
                                             <th scope="col" class="px-6 py-3">
                                                 Detail Penjualan
                                             </th>
+                                            <th scope="col" class="px-6 py-3">
+                                                Struk Belanja
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -122,6 +125,12 @@
                                                 <td class="px-6 py-4">
                                                     Rp
                                                     {{ number_format($penjualan->total_subtotal_dari_detail, 0, ',', '.') }}
+                                                </td>
+                                                <td class="px-6 py-4">
+                                                    <a href="{{ route('penjualan.receipt.pdf', $penjualan->PenjualanID) }}"
+                                                        class="font-medium text-blue-600 hover:underline">
+                                                        Download
+                                                    </a>
                                                 </td>
                                             </tr>
                                         @endforeach

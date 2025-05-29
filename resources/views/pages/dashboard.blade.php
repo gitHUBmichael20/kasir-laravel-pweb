@@ -86,7 +86,7 @@
                         class="px-4 py-2 text-white rounded-lg shadow-md bg-gradient-to-br from-orange-500 to-orange-400 hover:from-orange-400 hover:to-orange-500 transition duration-300">Tambah
                         Produk</button>
                 </a>
-                <a href="{{ route('pelanggan.all')}}">
+                <a href="{{ route('pelanggan.all') }}">
                     <button
                         class="px-4 py-2 text-white rounded-lg shadow-md bg-gradient-to-br from-orange-500 to-orange-400 hover:from-orange-400 hover:to-orange-500 transition duration-300">Tambah
                         Pelanggan</button></a>
@@ -95,6 +95,8 @@
 
         {{-- Daftar Transaksi Terakhir --}}
         <div class="relative overflow-x-auto my-4">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Daftar Transaksi Terakhir</h2>
+            
             <table class="mx-auto w-full text-sm text-center rtl:text-right text-gray-500 dark:text-gray-300">
                 <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-800 dark:text-gray-200">
                     <tr>
@@ -140,6 +142,9 @@
                     @endforeach
                 </tbody>
             </table>
+            <div class="p-4">
+                {{ $penjualans->links() }}
+            </div>
         </div>
     </div>
 

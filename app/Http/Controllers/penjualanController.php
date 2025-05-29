@@ -17,7 +17,7 @@ class penjualanController extends Controller
 
     public function index()
     {
-        $penjualans = Penjualan::all();
+        $penjualans = Penjualan::simplePaginate(15);
         return view('pages.dashboard', compact('penjualans'));
     }
 

@@ -45,7 +45,7 @@
         </div>
 
 
-        <div class="relative overflow-x-auto my-4">
+        <div class="relative overflow-x-auto my-4 sm:rounded-lg">
             <table class="w-full text-sm text-center rtl:text-right text-gray-500 dark:text-gray-300">
                 <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-800 dark:text-gray-200">
                     <tr>
@@ -99,13 +99,17 @@
                                 <div class="flex flex-row items-center gap-3">
                                     <a href="{{ route('pelanggan.detail', $pelanggan->PelangganID) }}"
                                         class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Detail</a>
-                                    <a href="}}"
+                                    <a href="{{ route('pelanggan.edit', $pelanggan->PelangganID) }}"
                                         class="font-medium text-yellow-600 dark:text-yellow-500 hover:underline">Edit</a>
-                                    <form id="deleteForm-" action=") }}" method="POST" class="inline">
+
+                                    <form id="deleteForm-{{ $pelanggan->PelangganID }}"
+                                        action="{{ route('pelanggan.delete', $pelanggan->PelangganID) }}" method="POST"
+                                        class="inline delete-pelanggan-form">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="button" onclick="window.confirmDelete({{})"
-                                            class="font-medium text-red-600 dark:text-red-500 hover:underline">
+                                        <button type="button"
+                                            class="font-medium text-red-600 dark:text-red-500 hover:underline"
+                                            data-pelanggan-id="{{ $pelanggan->PelangganID }}">
                                             Remove
                                         </button>
                                     </form>

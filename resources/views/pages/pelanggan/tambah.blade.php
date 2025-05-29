@@ -53,7 +53,7 @@
 
                         <hr class="border-gray-200 dark:border-gray-800 mb-6" />
 
-                        <form id="storepelangganForm" class="max-w-lg mx-auto" action="{{ route('pelanggan.store') }}"
+                        <form id="storeDataForm" class="max-w-lg mx-auto" action="{{ route('pelanggan.store') }}"
                             method="POST" enctype="multipart/form-data">
                             @csrf
 
@@ -61,24 +61,24 @@
                                 <label for="Namapelanggan"
                                     class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nama
                                     pelanggan</label>
-                                <input type="text" id="Namapelanggan" name="Namapelanggan"
+                                <input type="text" id="Namapelanggan" name="NamaPelanggan"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                     placeholder="Masukkan nama pelanggan" required>
                             </div>
                             <div class="grid md:grid-cols-2 md:gap-6">
                                 <div class="mb-5">
-                                    <label for="Harga"
-                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Harga</label>
-                                    <input type="number" id="Harga" name="Harga" step="0.01"
+                                    <label for="Alamat"
+                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Alamat</label>
+                                    <input type="text" id="Alamat" name="Alamat" step="0.01"
                                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                        placeholder="e.g. 150000" required>
+                                        placeholder="Jl. Merdeka" required>
                                 </div>
                                 <div class="mb-5">
-                                    <label for="Stok"
-                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Stok</label>
-                                    <input type="number" id="Stok" name="Stok"
+                                    <label for="NoTelp"
+                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nomor Telepon</label>
+                                    <input type="tel" id="NoTelp" name="NomorTelepon"
                                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                        placeholder="e.g. 100" required>
+                                        placeholder="0859999999" required>
                                 </div>
                             </div>
                             <div class="mb-5">
@@ -88,8 +88,7 @@
                                 <div class="relative">
                                     <input type="file" id="foto_pelanggan" name="foto_pelanggan" accept="image/*"
                                         class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-l-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900 dark:file:text-blue-200 dark:hover:file:bg-blue-800 transition-all duration-300">
-                                    <p class="mt-2 text-xs text-gray-500 dark:text-gray-300" id="file_input_help">PNG, JPG
-                                        or GIF (MAX. 800x400px).</p>
+                                    <p class="mt-2 text-xs text-gray-500 dark:text-gray-300" id="file_input_help">PNG, JPG or GIF.</p>
                                 </div>
                             </div>
 
