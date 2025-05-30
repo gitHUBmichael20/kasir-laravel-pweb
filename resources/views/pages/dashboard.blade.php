@@ -16,8 +16,8 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Total
-                            Penjualan Hari Ini</p>
-                        <p class="text-xl font-bold text-gray-900 dark:text-white mt-1">Rp 2,450,000</p>
+                            Penjualan Michael</p>
+                        <p class="text-xl font-bold text-gray-900 dark:text-white mt-1">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</p>
                     </div>
                 </div>
             </div>
@@ -33,7 +33,7 @@
                     <div class="ml-4">
                         <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
                             Transaksi Hari Ini</p>
-                        <p class="text-xl font-bold text-gray-900 dark:text-white mt-1">43</p>
+                        <p class="text-xl font-bold text-gray-900 dark:text-white mt-1">{{$totalTransaksi}}</p>
                     </div>
                 </div>
             </div>
@@ -50,7 +50,7 @@
                     <div class="ml-4">
                         <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Total
                             Produk</p>
-                        <p class="text-xl font-bold text-gray-900 dark:text-white mt-1">127</p>
+                        <p class="text-xl font-bold text-gray-900 dark:text-white mt-1">{{$totalProduk}}</p>
                     </div>
                 </div>
             </div>
@@ -67,7 +67,7 @@
                     <div class="ml-4">
                         <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Total
                             Pelanggan</p>
-                        <p class="text-xl font-bold text-gray-900 dark:text-white mt-1">89</p>
+                        <p class="text-xl font-bold text-gray-900 dark:text-white mt-1">{{$totalPelanggan}}</p>
                     </div>
                 </div>
             </div>

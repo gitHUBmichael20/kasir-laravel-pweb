@@ -11,7 +11,7 @@
                     style="scrollbar-width: none; -ms-overflow-style: none;">
                     <h1 class="text-3xl font-semibold text-left my-4 text-gray-900 dark:text-white">Tambahkan Transaksi</h1>
 
-                    <form class="flex items-center max-w-sm my-1.5">
+                    <form class="flex items-center max-w-sm my-1.5" action="{{ route('produk.all') }}" method="GET">
                         <label for="simple-search" class="sr-only">Search</label>
                         <div class="relative w-full">
                             <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
@@ -23,9 +23,9 @@
                                         d="M4 4h1.5L8 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm.75-3H7.5M11 7H6.312M17 4v6m-3-3h6" />
                                 </svg>
                             </div>
-                            <input type="text" id="simple-search"
+                            <input type="text" id="simple-search" name="search"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                placeholder="Search Product name..." required />
+                                placeholder="Search Product name..." value="{{ request('search') }}" required />
                         </div>
                         <button type="submit"
                             class="p-2.5 ms-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
@@ -106,51 +106,54 @@
                     class="w-full h-screen md:w-lg px-4 py-8 bg-white dark:bg-gray-800 shadow-lg rounded-xl overflow-y-auto md:ml-4 flex-shrink-0">
                     <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">Your Cart Summary</h2>
 
-                    <div class="mb-6">
-                        <label for="customer" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Pilih
-                            Pelanggan:</label>
-                        <select id="customer" name="customer"
-                            class="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                            <option value="">-- Pilih Pelanggan --</option>
-                            @foreach ($pelanggans as $pelanggan)
-                                <option value="{{ $pelanggan->PelangganID }}">{{ $pelanggan->NamaPelanggan }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+                    <form id="checkout-form" method="POST" action="{{ route('penjualan.store') }}">
+                        @csrf
+                        <div class="mb-6">
+                            <label for="customer"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Pilih
+                                Pelanggan:</label>
+                            <select id="customer" name="PelangganID"
+                                class="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                <option value="">-- Pilih Pelanggan --</option>
+                                @foreach ($pelanggans as $pelanggan)
+                                    <option value="{{ $pelanggan->PelangganID }}">{{ $pelanggan->NamaPelanggan }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
 
-                    <div class="shadow-lg rounded-xl overflow-hidden mb-8">
-                        <div class="p-6">
+                        <div class="shadow-lg rounded-xl overflow-hidden mb-8">
+                            <div class="p-6">
+                                <div
+                                    class="hidden md:grid grid-cols-5 gap-4 text-sm font-semibold text-gray-600 dark:text-gray-400 border-b pb-3 mb-4">
+                                    <div class="col-span-2">Product</div>
+                                    <div class="text-center">Price</div>
+                                    <div class="text-center">Quantity</div>
+                                    <div class="text-right">Total</div>
+                                </div>
+
+                                <div id="cart-items"></div>
+                            </div>
+
                             <div
-                                class="hidden md:grid grid-cols-5 gap-4 text-sm font-semibold text-gray-600 dark:text-gray-400 border-b pb-3 mb-4">
-                                <div class="col-span-2">Product</div>
-                                <div class="text-center">Price</div>
-                                <div class="text-center">Quantity</div>
-                                <div class="text-right">Total</div>
-                            </div>
-
-                            <div id="cart-items">
-                                <!-- Cart items will be dynamically added here -->
+                                class="bg-gray-50 dark:bg-gray-700 p-6 flex flex-col md:flex-row justify-between items-start md:items-center rounded-b-xl">
+                                <div class="mb-4 md:mb-0">
+                                    <p class="text-lg font-semibold text-gray-700 dark:text-gray-200">Subtotal:</p>
+                                    <p id="subtotal" class="text-xl font-bold text-gray-900 dark:text-white">Rp 0</p>
+                                </div>
+                                <button type="submit"
+                                    class="w-full md:w-auto inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200">
+                                    <svg class="w-5 h-5 mr-2 -ml-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                        fill="currentColor" viewBox="0 0 24 24">
+                                        <path fill-rule="evenodd"
+                                            d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2Zm-1 14a1 1 0 1 0 2 0v-3h3a1 1 0 1 0 0-2h-3V8a1 1 0 1 0-2 0v3H8a1 1 0 1 0 0 2h3v3Z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                    Proceed to Checkout
+                                </button>
                             </div>
                         </div>
-
-                        <div
-                            class="bg-gray-50 dark:bg-gray-700 p-6 flex flex-col md:flex-row justify-between items-start md:items-center rounded-b-xl">
-                            <div class="mb-4 md:mb-0">
-                                <p class="text-lg font-semibold text-gray-700 dark:text-gray-200">Subtotal:</p>
-                                <p id="subtotal" class="text-xl font-bold text-gray-900 dark:text-white">Rp 0</p>
-                            </div>
-                            <button type="button" onclick="proceedToCheckout()"
-                                class="w-full md:w-auto inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200">
-                                <svg class="w-5 h-5 mr-2 -ml-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                    fill="currentColor" viewBox="0 0 24 24">
-                                    <path fill-rule="evenodd"
-                                        d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2Zm-1 14a1 1 0 1 0 2 0v-3h3a1 1 0 1 0 0-2h-3V8a1 1 0 1 0-2 0v3H8a1 1 0 1 0 0 2h3v3Z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                                Proceed to Checkout
-                            </button>
-                        </div>
-                    </div>
+                    </form>
                 </div>
             </main>
         </div>
@@ -183,24 +186,24 @@
                 subtotal += total;
 
                 const cartItemHTML = `
-            <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-center border-b border-gray-200 dark:border-gray-700 py-4 last:border-b-0">
-                <div class="col-span-2 flex items-center">
-                    <div>
-                        <p class="font-semibold text-gray-900 dark:text-white">${item.name}</p>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">#${productId}</p>
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-center border-b border-gray-200 dark:border-gray-700 py-4 last:border-b-0">
+                    <div class="col-span-2 flex items-center">
+                        <div>
+                            <p class="font-semibold text-gray-900 dark:text-white">${item.name}</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">#${productId}</p>
+                        </div>
                     </div>
-                </div>
-                <div class="text-center font-medium text-gray-800 dark:text-gray-300">Rp ${item.price.toLocaleString()}</div>
-                <div class="text-center">
-                    <div class="flex items-center justify-center space-x-2">
-                        <button onclick="changeQuantity('${productId}', -1)" class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white px-2 py-1 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600">-</button>
-                        <span class="font-semibold text-gray-900 dark:text-white">${item.quantity}</span>
-                        <button onclick="changeQuantity('${productId}', 1)" class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white px-2 py-1 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600">+</button>
+                    <div class="text-center font-medium text-gray-800 dark:text-gray-300">Rp ${item.price.toLocaleString()}</div>
+                    <div class="text-center">
+                        <div class="flex items-center justify-center space-x-2">
+                            <button type="button" onclick="changeQuantity('${productId}', -1)" class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white px-2 py-1 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600">-</button>
+                            <span class="font-semibold text-gray-900 dark:text-white">${item.quantity}</span>
+                            <button type="button" onclick="changeQuantity('${productId}', 1)" class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white px-2 py-1 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600">+</button>
+                        </div>
                     </div>
+                    <div class="text-right font-bold text-gray-900 dark:text-white">Rp ${total.toLocaleString()}</div>
                 </div>
-                <div class="text-right font-bold text-gray-900 dark:text-white">Rp ${total.toLocaleString()}</div>
-            </div>
-        `;
+            `;
                 cartItemsContainer.innerHTML += cartItemHTML;
             }
 
@@ -217,7 +220,9 @@
             }
         }
 
-        function proceedToCheckout() {
+        document.getElementById('checkout-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
             const customerId = document.getElementById('customer').value;
             if (!customerId) {
                 Swal.fire({
@@ -229,19 +234,27 @@
                 return;
             }
 
-            // Kumpulkan item dari keranjang
+
+            if (Object.keys(cart).length === 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Peringatan!',
+                    text: 'Keranjang belanja kosong. Silakan pilih produk terlebih dahulu.',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+
             const items = Object.keys(cart).map(productId => ({
                 ProdukID: productId,
                 JumlahProduk: cart[productId].quantity
             }));
 
-            // Buat data yang akan dikirim
             const data = {
                 PelangganID: customerId,
                 items: items
             };
 
-            // Tampilkan loading
             Swal.fire({
                 title: 'Memproses transaksi...',
                 text: 'Mohon tunggu sebentar.',
@@ -253,45 +266,76 @@
                 }
             });
 
-            // Kirim data ke server
-            fetch('http://127.0.0.1:8000/api/penjualan/store', {
+
+            const csrfToken = document.querySelector('input[name="_token"]')?.value ||
+                document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+
+            const apiUrl = '{{ route('penjualan.store') }}';
+
+            fetch(apiUrl, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'X-Requested-With': 'XMLHttpRequest'
                     },
                     body: JSON.stringify(data)
                 })
-                .then(response => {
+                .then(async response => {
+                    const responseData = await response.text();
+                    console.log('Response status:', response.status);
+                    console.log('Response data:', responseData);
+
                     if (!response.ok) {
-                        throw new Error('Ada masalah saat mengirim data');
+
+                        let errorData;
+                        try {
+                            errorData = JSON.parse(responseData);
+                        } catch (e) {
+                            throw new Error(`HTTP ${response.status}: ${responseData}`);
+                        }
+
+                        throw new Error(errorData.message ||
+                            `HTTP ${response.status}: Ada masalah saat mengirim data`);
                     }
-                    return response.json();
+
+
+                    try {
+                        return JSON.parse(responseData);
+                    } catch (e) {
+
+                        return {
+                            success: true,
+                            message: 'Transaksi berhasil disimpan!'
+                        };
+                    }
                 })
                 .then(result => {
+                    console.log('Success:', result);
                     Swal.fire({
                         icon: 'success',
                         title: 'Berhasil!',
-                        text: 'Transaksi berhasil disimpan!',
+                        text: result.message || 'Transaksi berhasil disimpan!',
                         confirmButtonText: 'OK'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            // Optional: Reset keranjang setelah berhasil
-                            // cart = {};
-                            // updateCartUI();
-                        }
+                    }).then(() => {
+
+                        cart = {};
+                        updateCartUI();
+
                     });
-                    console.log('Berhasil:', result);
                 })
                 .catch(error => {
+                    console.error('Error:', error);
                     Swal.fire({
                         icon: 'error',
                         title: 'Oops...',
-                        text: 'Ada kesalahan saat menyimpan transaksi. Silakan coba lagi.',
+                        text: error.message ||
+                            'Ada kesalahan saat menyimpan transaksi. Silakan coba lagi.',
                         confirmButtonText: 'OK'
                     });
-                    console.log('Error:', error);
                 });
-        }
+        });
     </script>
-
 @endsection

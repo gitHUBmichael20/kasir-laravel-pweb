@@ -34,7 +34,7 @@ class PenjualanSeeder extends Seeder
         for ($i = 1; $i <= $numberOfSales; $i++) {
 
 
-            $penjualanID = 'SALE-' . str_pad($i, 3, '0', STR_PAD_LEFT);
+            $penjualanID = 'SALE-SEED' . substr(uniqid(), 0, 3) . '-' . str_pad($i, 3, '0', STR_PAD_LEFT);
 
             Penjualan::create([
                 'PenjualanID' => $penjualanID,

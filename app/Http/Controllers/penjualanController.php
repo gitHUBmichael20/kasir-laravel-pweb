@@ -6,22 +6,11 @@ use Illuminate\Http\Request;
 use App\Models\Penjualan;
 use App\Models\Produk;
 use App\Models\Pelanggan;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Storage;
-use App\Models\Detailpenjualan;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class penjualanController extends Controller
 {
-
-
-    public function index()
-    {
-        $penjualans = Penjualan::simplePaginate(15);
-        return view('pages.dashboard', compact('penjualans'));
-    }
 
     public function detailData()
     {
@@ -32,92 +21,75 @@ class penjualanController extends Controller
 
     public function store(Request $request)
     {
-        // Validasi input
-        $validator = Validator::make($request->all(), [
-            'PelangganID' => 'required|exists:pelanggan,PelangganID',
-            'items' => 'required|array|min:1',
-            'items.*.ProdukID' => 'required|exists:produk,ProdukID',
-            'items.*.JumlahProduk' => 'required|integer|min:1',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Validation failed',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
         try {
-            // Mulai transaksi database
-            DB::beginTransaction();
+            $request->validate([
+                'PelangganID' => 'required|string',
+                'items' => 'required|array',
+                'items.*.ProdukID' => 'required|string',
+                'items.*.JumlahProduk' => 'required|integer|min:1'
+            ]);
 
-            // Buat penjualan baru
-            $penjualan = new Penjualan();
-            $penjualan->PelangganID = $request->PelangganID;
-            $penjualan->TanggalPenjualan = now();
-            $penjualan->TotalHarga = 0; // Akan dihitung setelah detail
-            $penjualan->save();
+            Log::info('Penjualan request data:', $request->all());
 
+            $pelangganID = $request->input('PelangganID');
+            $items = $request->input('items');
+
+            // TAMBAHAN: Hitung total harga
             $totalHarga = 0;
-            $items = $request->items;
-
-            // Proses setiap item di keranjang
             foreach ($items as $item) {
-                $produk = Produk::find($item['ProdukID']);
-
-                // Validasi stok
-                if ($produk->Stok < $item['JumlahProduk']) {
-                    DB::rollBack();
-                    return response()->json([
-                        'status' => 'error',
-                        'message' => "Stok tidak cukup untuk produk {$produk->NamaProduk}",
-                    ], 400);
+                // Ambil harga produk dari database
+                $produk = \App\Models\Produk::find($item['ProdukID']);
+                if ($produk) {
+                    $totalHarga += $produk->Harga * $item['JumlahProduk'];
                 }
-
-                // Buat detail penjualan
-                $detail = new Detailpenjualan();
-                $detail->PenjualanID = $penjualan->PenjualanID;
-                $detail->ProdukID = $item['ProdukID'];
-                $detail->JumlahProduk = $item['JumlahProduk'];
-                $detail->Subtotal = $produk->Harga * $item['JumlahProduk'];
-                $detail->save();
-
-                // Kurangi stok produk
-                $produk->Stok -= $item['JumlahProduk'];
-                $produk->save();
-
-                $totalHarga += $detail->Subtotal;
             }
 
-            // Update total harga penjualan
-            $penjualan->TotalHarga = $totalHarga;
-            $penjualan->save();
+            // TAMBAHAN: Simpan data penjualan
+            $penjualan = \App\Models\Penjualan::create([
+                'PelangganID' => $pelangganID,
+                'TanggalPenjualan' => now()->toDateString(),
+                'TotalHarga' => $totalHarga
+            ]);
 
-            // Commit transaksi
-            DB::commit();
+            // TAMBAHAN: Simpan detail penjualan
+            foreach ($items as $item) {
+                $produk = \App\Models\Produk::find($item['ProdukID']);
+                if ($produk) {
+                    \App\Models\Detailpenjualan::create([
+                        'PenjualanID' => $penjualan->PenjualanID,
+                        'ProdukID' => $item['ProdukID'],
+                        'JumlahProduk' => $item['JumlahProduk'],
+                        'Subtotal' => $produk->Harga * $item['JumlahProduk']
+                    ]);
+                }
+            }
 
             return response()->json([
-                'status' => 'success',
-                'message' => 'Penjualan berhasil dibuat',
+                'success' => true,
+                'message' => 'Transaksi berhasil disimpan!',
                 'data' => [
-                    'PenjualanID' => $penjualan->PenjualanID,
-                    'PelangganID' => $penjualan->PelangganID,
-                    'TotalHarga' => $penjualan->TotalHarga,
-                    'TanggalPenjualan' => $penjualan->TanggalPenjualan,
-                ],
-            ], 201);
-        } catch (\Exception $e) {
-            // Rollback jika terjadi error
-            DB::rollBack();
+                    'penjualan_id' => $penjualan->PenjualanID,
+                    'pelanggan_id' => $pelangganID,
+                    'total_items' => count($items),
+                    'total_harga' => $totalHarga
+                ]
+            ], 200);
+        } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
-                'status' => 'error',
-                'message' => 'Terjadi kesalahan saat membuat penjualan',
-                'error' => $e->getMessage(),
+                'success' => false,
+                'message' => 'Data tidak valid',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Error in penjualan store: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage()
             ], 500);
         }
     }
-
+    
     public function showReceipt($id)
     {
         try {

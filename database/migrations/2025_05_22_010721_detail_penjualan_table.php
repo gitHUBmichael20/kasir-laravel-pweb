@@ -11,11 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
         Schema::create('detailpenjualan', function (Blueprint $table) {
             $table->string('DetailID')->primary();
-            $table->unsignedBigInteger('PenjualanID')->nullable();
-            $table->unsignedBigInteger('ProdukID')->nullable();
+            $table->string('PenjualanID')->nullable();
+            $table->string('ProdukID')->nullable();
             $table->integer('JumlahProduk')->nullable();
             $table->decimal('Subtotal', 10, 2)->nullable();
             $table->foreign('PenjualanID')->references('PenjualanID')->on('penjualan')->onDelete('cascade');
@@ -29,7 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
         Schema::dropIfExists('detailpenjualan');
     }
 };

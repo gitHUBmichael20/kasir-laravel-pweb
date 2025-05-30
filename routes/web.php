@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\penjualanController;
+use App\Http\Controllers\StorageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,7 +20,7 @@ use App\Http\Controllers\penjualanController;
 //     return view('pages.dashboard');
 // });
 
-Route::get('/', [PenjualanController::class, 'index'])->name('pages.dashboard');
+Route::get('/', [StorageController::class, 'index'])->name('pages.dashboard');
 
 Route::get('/penjualan/struk-belanja/{id}', [PenjualanController::class, 'showReceipt'])->name('penjualan.receipt.pdf');
 
