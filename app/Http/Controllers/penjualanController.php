@@ -14,7 +14,7 @@ class penjualanController extends Controller
 
     public function detailData()
     {
-        $produks = Produk::all();
+        $produks = Produk::where('NamaProduk', 'like', '%' . request('search') . '%')->get();
         $pelanggans = Pelanggan::all();
         return view('pages.penjualan.tambah', compact('produks', 'pelanggans'));
     }

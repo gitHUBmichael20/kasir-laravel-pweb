@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="icon" href="{{ asset('storage/logo/logo-web.png') }}" type="image/png">
+    <link rel="shortcut icon" href="{{ asset('storage/logo/logo-web.png') }}" type="image/png">
     <title>Kasir Michael @yield('title')</title>
     <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -39,8 +41,8 @@
         class="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0"
         aria-label="Sidebar">
         <div class="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
-            <a href="https://flowbite.com/" class="flex items-center ps-2.5 mb-5">
-                <img src="https://flowbite.com/docs/images/logo.svg" class="h-6 me-3 sm:h-7" alt="Flowbite Logo" />
+            <a href="/" class="flex items-center ps-2.5 mb-5">
+                <img src="{{ asset('storage/logo/logo-web.png') }}" class="h-6 me-3 sm:h-7" alt="Flowbite Logo" />
                 <span class="self-center text-xl font-semibold whitespace-nowrap dark:text-white">Kasir Michael</span>
             </a>
             <ul class="space-y-2 font-medium">

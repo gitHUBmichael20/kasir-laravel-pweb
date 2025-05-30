@@ -9,19 +9,11 @@ use Faker\Factory as Faker;
 
 class PenjualanSeeder extends Seeder
 {
-    /**
-     * Jalankan database seeds.
-     */
     public function run(): void
     {
         $faker = Faker::create('id_ID');
 
-
-        Penjualan::truncate();
-
-
         $pelangganIDs = Pelanggan::pluck('PelangganID')->toArray();
-
 
         if (empty($pelangganIDs)) {
             $this->command->error('Tidak ada data pelanggan ditemukan. Harap jalankan PelangganSeeder terlebih dahulu.');
@@ -30,17 +22,12 @@ class PenjualanSeeder extends Seeder
 
         $numberOfSales = 30;
 
-
         for ($i = 1; $i <= $numberOfSales; $i++) {
-
-
-            $penjualanID = 'SALE-SEED' . substr(uniqid(), 0, 3) . '-' . str_pad($i, 3, '0', STR_PAD_LEFT);
-
             Penjualan::create([
-                'PenjualanID' => $penjualanID,
+                'PenjualanID' => 'SALE-SEED-' . str_pad($i, 3, '0', STR_PAD_LEFT), // Format: SALE-SEED-001
                 'PelangganID' => $faker->randomElement($pelangganIDs),
                 'TanggalPenjualan' => $faker->dateTimeBetween('-1 year', 'now')->format('Y-m-d'),
-                'TotalHarga' => 0,
+                'TotalHarga' => 0, // Will be updated by DetailPenjualanSeeder
             ]);
         }
 

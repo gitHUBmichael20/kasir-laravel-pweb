@@ -47,5 +47,7 @@ class PelangganSeeder extends Seeder
 
             sleep(1); // Delay to avoid rate limiting
         }
+
+        $this->command->info('Berhasil membuat 5 record pelanggan.');
     }
 }

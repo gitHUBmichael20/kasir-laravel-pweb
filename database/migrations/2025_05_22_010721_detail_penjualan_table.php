@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('PenjualanID')->nullable();
             $table->string('ProdukID')->nullable();
             $table->integer('JumlahProduk')->nullable();
-            $table->decimal('Subtotal', 10, 2)->nullable();
+            $table->bigInteger('Subtotal')->nullable();
             $table->foreign('PenjualanID')->references('PenjualanID')->on('penjualan')->onDelete('cascade');
             $table->foreign('ProdukID')->references('ProdukID')->on('produk')->onDelete('cascade');
             $table->timestamps();

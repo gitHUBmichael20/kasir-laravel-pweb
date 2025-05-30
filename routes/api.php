@@ -48,10 +48,5 @@ Route::prefix('produk')->group(function () {
 Route::prefix('penjualan')->group(function () {
     Route::get('/', [PenjualanController::class, 'detailData'])->name('penjualan.all');
     Route::post('/store', [PenjualanController::class, 'store'])->name('penjualan.store');
-
-    // Route::get('/', function () { return view('pages.penjualan.tambah'); })->name('penjualan.all');
-    // Route::get('/images/{filename}', [StorageController::class, 'penjualanImage'])->name('penjualan.gambar');
-    // Route::put('/update/{id}', [PenjualanController::class, 'update'])->name('penjualan.update');
-    // Route::delete('/delete/{id}', [PenjualanController::class, 'destroy'])->name('penjualan.destroy');
 });
 

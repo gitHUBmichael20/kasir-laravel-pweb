@@ -186,7 +186,7 @@ function setupStoreListener() {
     }
 }
 
-function setupUpdateListeners() {
+function setupUpdateListener() {
     const editForms = document.querySelectorAll(
         "form.edit-produk-form, form.edit-pelanggan-form"
     );

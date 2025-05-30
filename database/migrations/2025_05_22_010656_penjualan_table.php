@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('penjualan', function (Blueprint $table) {
             $table->string('PenjualanID')->primary();
             $table->date('TanggalPenjualan')->nullable();
-            $table->decimal('TotalHarga', 10, 2)->nullable();
+            $table->decimal('TotalHarga', 12, 2)->nullable();
             $table->string('PelangganID')->nullable(); // Changed from unsignedBigInteger to string
             $table->foreign('PelangganID')->references('PelangganID')->on('pelanggan')->onDelete('cascade');
             $table->timestamps();
