@@ -4,7 +4,7 @@
 
 @section('content')
 
-    <div class="bg-white dark:bg-gray-900 sm:ml-64 p-4 px-5">
+    <div class="bg-white dark:bg-gray-900 sm:ml-64 p-4 px-5 min-h-screen">
 
         <h1 class="text-3xl font-semibold text-left my-4 text-gray-900 dark:text-white">List Pelanggan || Kasir Michael</h1>
 
@@ -120,6 +120,15 @@
                 </tbody>
             </table>
         </div>
+
+        <!-- Empty State jika tidak ada produk -->
+            @if (count($pelanggans) == 0)
+                <div class="text-center py-16">
+                    <i class="fas fa-box-open text-6xl text-gray-400 dark:text-gray-500 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-600 dark:text-gray-300 mb-2">Tidak Ada Pelanggan</h3>
+                    <p class="text-gray-500 dark:text-gray-400">Belum ada Pelanggan yang tersedia saat ini.</p>
+                </div>
+            @endif
 
     </div>
 

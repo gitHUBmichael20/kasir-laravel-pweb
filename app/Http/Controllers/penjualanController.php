@@ -9,6 +9,8 @@ use App\Models\Pelanggan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Detailpenjualan;
+use Illuminate\Support\Facades\Validator;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class penjualanController extends Controller
@@ -30,94 +32,89 @@ class penjualanController extends Controller
 
     public function store(Request $request)
     {
-        DB::beginTransaction();
+        // Validasi input
+        $validator = Validator::make($request->all(), [
+            'PelangganID' => 'required|exists:pelanggan,PelangganID',
+            'items' => 'required|array|min:1',
+            'items.*.ProdukID' => 'required|exists:produk,ProdukID',
+            'items.*.JumlahProduk' => 'required|integer|min:1',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
 
         try {
+            // Mulai transaksi database
+            DB::beginTransaction();
 
-            $request->validate([
-                'TanggalPenjualan' => 'required|date',
-                'PelangganID' => 'required|exists:pelanggan,PelangganID',
-                'products' => 'required|array|min:1',
-                'products.*.ProdukID' => 'required|exists:produk,ProdukID',
-                'products.*.JumlahProduk' => 'required|integer|min:1',
-            ]);
+            // Buat penjualan baru
+            $penjualan = new Penjualan();
+            $penjualan->PelangganID = $request->PelangganID;
+            $penjualan->TanggalPenjualan = now();
+            $penjualan->TotalHarga = 0; // Akan dihitung setelah detail
+            $penjualan->save();
 
-            $totalHargaPenjualan = 0;
-            $detailPenjualanData = [];
+            $totalHarga = 0;
+            $items = $request->items;
 
-
-            foreach ($request->products as $item) {
+            // Proses setiap item di keranjang
+            foreach ($items as $item) {
                 $produk = Produk::find($item['ProdukID']);
 
-
-                if (!$produk) {
-                    throw new \Exception("Produk dengan ID {$item['ProdukID']} tidak ditemukan.");
-                }
+                // Validasi stok
                 if ($produk->Stok < $item['JumlahProduk']) {
-                    throw new \Exception("Stok {$produk->NamaProduk} tidak mencukupi. Stok tersedia: {$produk->Stok}, Diminta: {$item['JumlahProduk']}.");
+                    DB::rollBack();
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => "Stok tidak cukup untuk produk {$produk->NamaProduk}",
+                    ], 400);
                 }
 
-                $subtotal = $item['JumlahProduk'] * $produk->Harga;
-                $totalHargaPenjualan += $subtotal;
+                // Buat detail penjualan
+                $detail = new Detailpenjualan();
+                $detail->PenjualanID = $penjualan->PenjualanID;
+                $detail->ProdukID = $item['ProdukID'];
+                $detail->JumlahProduk = $item['JumlahProduk'];
+                $detail->Subtotal = $produk->Harga * $item['JumlahProduk'];
+                $detail->save();
 
-                $detailPenjualanData[] = [
-                    'ProdukID' => $item['ProdukID'],
-                    'JumlahProduk' => $item['JumlahProduk'],
-                    'Subtotal' => $subtotal,
-                ];
-            }
-
-
-            $penjualan = Penjualan::create([
-                'TanggalPenjualan' => $request->TanggalPenjualan,
-                'TotalHarga' => $totalHargaPenjualan,
-                'PelangganID' => $request->PelangganID,
-            ]);
-
-
-            foreach ($detailPenjualanData as $detail) {
-                $penjualan->detailpenjualans()->create($detail);
-
-
-                $produk = Produk::find($detail['ProdukID']);
-                $produk->Stok -= $detail['JumlahProduk'];
+                // Kurangi stok produk
+                $produk->Stok -= $item['JumlahProduk'];
                 $produk->save();
+
+                $totalHarga += $detail->Subtotal;
             }
 
+            // Update total harga penjualan
+            $penjualan->TotalHarga = $totalHarga;
+            $penjualan->save();
+
+            // Commit transaksi
             DB::commit();
 
-
-            if ($request->ajax() || $request->wantsJson()) {
-                return response()->json([
-                    'status' => 'success',
-                    'message' => 'Penjualan berhasil ditambahkan!',
-                    'data' => $penjualan->load('detailpenjualans.produk', 'pelanggan')
-                ], 201);
-            }
-
-
-            Session::flash('success', 'Penjualan berhasil ditambahkan!');
-            return redirect()->route('penjualan.all');
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            DB::rollBack();
-            if ($request->ajax() || $request->wantsJson()) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Validasi gagal.',
-                    'errors' => $e->errors()
-                ], 422);
-            }
-            return redirect()->back()->withErrors($e->errors())->withInput();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Penjualan berhasil dibuat',
+                'data' => [
+                    'PenjualanID' => $penjualan->PenjualanID,
+                    'PelangganID' => $penjualan->PelangganID,
+                    'TotalHarga' => $penjualan->TotalHarga,
+                    'TanggalPenjualan' => $penjualan->TanggalPenjualan,
+                ],
+            ], 201);
         } catch (\Exception $e) {
+            // Rollback jika terjadi error
             DB::rollBack();
-            if ($request->ajax() || $request->wantsJson()) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Gagal menambahkan penjualan: ' . $e->getMessage()
-                ], 400);
-            }
-            Session::flash('error', 'Gagal menambahkan penjualan: ' . $e->getMessage());
-            return redirect()->back();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Terjadi kesalahan saat membuat penjualan',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 

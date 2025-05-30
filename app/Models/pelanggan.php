@@ -8,24 +8,32 @@ class Pelanggan extends Model
 {
     protected $table = 'pelanggan';
     protected $primaryKey = 'PelangganID';
+    public $incrementing = false;
+    protected $keyType = 'string';
     public $timestamps = true;
 
     protected $fillable = [
+        'PelangganID',
         'NamaPelanggan',
         'Alamat',
         'NomorTelepon',
         'foto_pelanggan',
     ];
 
-    public function pelanggan()
+    protected static function boot()
     {
-        return $this->belongsTo(Pelanggan::class, 'PelangganID', 'PelangganID');
-    }
+        parent::boot();
 
+        static::creating(function ($model) {
+            if (empty($model->PelangganID)) {
+                $lastPelanggan = self::orderBy('created_at', 'desc')->first();
+                $lastNumber = $lastPelanggan ? (int) str_replace('CUST-', '', $lastPelanggan->PelangganID) : 0;
+                $model->PelangganID = 'CUST-' . ($lastNumber + 1);
+            }
+        });
+    }
     public function detailpenjualans()
     {
-        // Pastikan 'PenjualanID' (argumen kedua) adalah foreign key di tabel 'detailpenjualan'
-        // dan 'PenjualanID' (argumen ketiga) adalah local key di tabel 'penjualan'
         return $this->hasMany(Detailpenjualan::class, 'PenjualanID', 'PenjualanID');
     }
 }

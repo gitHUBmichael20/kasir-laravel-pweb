@@ -4,7 +4,7 @@
 
 @section('content')
 
-<div class="bg-white dark:bg-gray-900 sm:ml-64 p-4 overflow-hidden">
+<div class="bg-white dark:bg-gray-900 sm:ml-64 p-4 overflow-hidden min-h-screen">
 
     <nav class="flex px-5 py-3 text-gray-700 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-800 dark:border-gray-700"
         aria-label="Breadcrumb">

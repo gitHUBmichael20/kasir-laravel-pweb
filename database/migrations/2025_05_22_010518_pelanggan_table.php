@@ -13,7 +13,7 @@ return new class extends Migration
     {
         //
         Schema::create('pelanggan', function (Blueprint $table) {
-            $table->id('PelangganID');
+            $table->string('PelangganID')->primary();
             $table->string('NamaPelanggan', 255);
             $table->text('Alamat')->nullable();
             $table->string('NomorTelepon', 25);

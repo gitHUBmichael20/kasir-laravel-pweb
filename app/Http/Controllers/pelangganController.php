@@ -28,7 +28,7 @@ class pelangganController extends Controller
                 'detailpenjualan.PenjualanID',
                 'penjualan.TanggalPenjualan',
                 'penjualan.TotalHarga',
-                DB::raw('SUM(detailpenjualan.Jumlahpelanggan) AS total_jumlah_pelanggan_dari_detail'),
+                DB::raw('SUM(detailpenjualan.JumlahProduk) AS total_jumlah_produk_dari_detail'), // Ganti Jumlahpelanggan jadi JumlahProduk
                 DB::raw('SUM(detailpenjualan.Subtotal) AS total_subtotal_dari_detail')
             )
             ->join('penjualan', 'detailpenjualan.PenjualanID', '=', 'penjualan.PenjualanID')
@@ -94,7 +94,7 @@ class pelangganController extends Controller
             $filename = null;
             if ($request->hasFile('foto_pelanggan')) {
                 $file = $request->file('foto_pelanggan');
-                $filename = time() . '.' . $file->getClientOriginalExtension();
+                $filename = uniqid() . '-' . time() . '.' . $file->getClientOriginalExtension();
                 $file->storeAs('public/pelanggan', $filename);
                 $validatedData['foto_pelanggan'] = $filename;
             }

@@ -5,7 +5,6 @@
 @section('content')
 
     <div class="bg-white dark:bg-gray-900 flex h-full">
-
         <div class="sm:ml-64 p-4 flex flex-1 overflow-hidden h-full">
             <main class="flex-1 flex flex-col md:flex-row overflow-hidden">
                 <div class="flex-1 overflow-y-scroll pr-4 pb-4" style="scrollbar-width: none; -ms-overflow-style: none;">
@@ -81,8 +80,9 @@
                                             Rp {{ number_format($produk->Harga, 0, ',', '.') }}</span>
 
                                         <button type="button"
+                                            onclick="addToCart('{{ $produk->ProdukID }}', '{{ $produk->NamaProduk }}', {{ $produk->Harga }})"
                                             class="text-white inline-flex items-center justify-center gap-1.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-3 py-1.5 me-1 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
-                                            <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
+                                            <svg class="w-6 h-6 text-white" aria-hidden="true"
                                                 xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                 fill="currentColor" viewBox="0 0 24 24">
                                                 <path fill-rule="evenodd"
@@ -127,50 +127,8 @@
                                 <div class="text-right">Total</div>
                             </div>
 
-                            <div
-                                class="grid grid-cols-1 md:grid-cols-5 gap-4 items-center border-b border-gray-200 dark:border-gray-700 py-4 last:border-b-0">
-                                <div class="col-span-2 flex items-center">
-                                    <img src="https://via.placeholder.com/60" alt="Product Image"
-                                        class="w-16 h-16 object-cover rounded-md mr-4">
-                                    <div>
-                                        <p class="font-semibold text-gray-900 dark:text-white">Sample Product Name 1</p>
-                                        <p class="text-sm text-gray-500 dark:text-gray-400">#PROD001</p>
-                                    </div>
-                                </div>
-                                <div class="text-center font-medium text-gray-800 dark:text-gray-300">Rp 50.000</div>
-                                <div class="text-center">
-                                    <div class="flex items-center justify-center space-x-2">
-                                        <button
-                                            class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white px-2 py-1 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600">-</button>
-                                        <span class="font-semibold text-gray-900 dark:text-white">2</span>
-                                        <button
-                                            class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white px-2 py-1 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600">+</button>
-                                    </div>
-                                </div>
-                                <div class="text-right font-bold text-gray-900 dark:text-white">Rp 100.000</div>
-                            </div>
-
-                            <div
-                                class="grid grid-cols-1 md:grid-cols-5 gap-4 items-center border-b border-gray-200 dark:border-gray-700 py-4 last:border-b-0">
-                                <div class="col-span-2 flex items-center">
-                                    <img src="https://via.placeholder.com/60" alt="Product Image"
-                                        class="w-16 h-16 object-cover rounded-md mr-4">
-                                    <div>
-                                        <p class="font-semibold text-gray-900 dark:text-white">Another Great Item</p>
-                                        <p class="text-sm text-gray-500 dark:text-gray-400">#PROD002</p>
-                                    </div>
-                                </div>
-                                <div class="text-center font-medium text-gray-800 dark:text-gray-300">Rp 25.000</div>
-                                <div class="text-center">
-                                    <div class="flex items-center justify-center space-x-2">
-                                        <button
-                                            class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white px-2 py-1 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600">-</button>
-                                        <span class="font-semibold text-gray-900 dark:text-white">1</span>
-                                        <button
-                                            class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white px-2 py-1 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600">+</button>
-                                    </div>
-                                </div>
-                                <div class="text-right font-bold text-gray-900 dark:text-white">Rp 25.000</div>
+                            <div id="cart-items">
+                                <!-- Cart items will be dynamically added here -->
                             </div>
                         </div>
 
@@ -178,9 +136,9 @@
                             class="bg-gray-50 dark:bg-gray-700 p-6 flex flex-col md:flex-row justify-between items-start md:items-center rounded-b-xl">
                             <div class="mb-4 md:mb-0">
                                 <p class="text-lg font-semibold text-gray-700 dark:text-gray-200">Subtotal:</p>
-                                <p class="text-xl font-bold text-gray-900 dark:text-white">Rp 125.000</p>
+                                <p id="subtotal" class="text-xl font-bold text-gray-900 dark:text-white">Rp 0</p>
                             </div>
-                            <button type="button"
+                            <button type="button" onclick="proceedToCheckout()"
                                 class="w-full md:w-auto inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200">
                                 <svg class="w-5 h-5 mr-2 -ml-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                     fill="currentColor" viewBox="0 0 24 24">
@@ -196,5 +154,113 @@
             </main>
         </div>
     </div>
+
+    <script>
+        let cart = {};
+
+        function addToCart(productId, productName, productPrice) {
+            if (cart[productId]) {
+                cart[productId].quantity += 1;
+            } else {
+                cart[productId] = {
+                    name: productName,
+                    price: productPrice,
+                    quantity: 1
+                };
+            }
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const cartItemsContainer = document.getElementById('cart-items');
+            cartItemsContainer.innerHTML = '';
+            let subtotal = 0;
+
+            for (const productId in cart) {
+                const item = cart[productId];
+                const total = item.price * item.quantity;
+                subtotal += total;
+
+                const cartItemHTML = `
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-center border-b border-gray-200 dark:border-gray-700 py-4 last:border-b-0">
+                <div class="col-span-2 flex items-center">
+                    <div>
+                        <p class="font-semibold text-gray-900 dark:text-white">${item.name}</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">#${productId}</p>
+                    </div>
+                </div>
+                <div class="text-center font-medium text-gray-800 dark:text-gray-300">Rp ${item.price.toLocaleString()}</div>
+                <div class="text-center">
+                    <div class="flex items-center justify-center space-x-2">
+                        <button onclick="changeQuantity('${productId}', -1)" class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white px-2 py-1 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600">-</button>
+                        <span class="font-semibold text-gray-900 dark:text-white">${item.quantity}</span>
+                        <button onclick="changeQuantity('${productId}', 1)" class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white px-2 py-1 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600">+</button>
+                    </div>
+                </div>
+                <div class="text-right font-bold text-gray-900 dark:text-white">Rp ${total.toLocaleString()}</div>
+            </div>
+        `;
+                cartItemsContainer.innerHTML += cartItemHTML;
+            }
+
+            document.getElementById('subtotal').textContent = `Rp ${subtotal.toLocaleString()}`;
+        }
+
+        function changeQuantity(productId, delta) {
+            if (cart[productId]) {
+                cart[productId].quantity += delta;
+                if (cart[productId].quantity <= 0) {
+                    delete cart[productId];
+                }
+                updateCartUI();
+            }
+        }
+
+        function proceedToCheckout() {
+            const customerId = document.getElementById('customer').value;
+            if (!customerId) {
+                alert('Silakan pilih pelanggan terlebih dahulu.');
+                return;
+            }
+
+            // Kumpulkan item dari keranjang
+            const items = Object.keys(cart).map(productId => ({
+                ProdukID: productId,
+                JumlahProduk: cart[productId].quantity
+            }));
+
+            // Buat data yang akan dikirim
+            const data = {
+                PelangganID: customerId,
+                items: items
+            };
+
+            // Kirim data ke server
+            fetch('http://127.0.0.1:8000/api/penjualan/store', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Ada masalah saat mengirim data');
+                    }
+                    return response.json();
+                })
+                .then(result => {
+                    alert('Transaksi berhasil disimpan!');
+                    console.log('Berhasil:', result);
+                    // Kalau mau, kamu bisa reset keranjang di sini
+                    // cart = {};
+                    // updateCartUI();
+                })
+                .catch(error => {
+                    alert('Ada kesalahan, coba lagi ya.');
+                    console.log('Error:', error);
+                });
+        }
+    </script>
 
 @endsection

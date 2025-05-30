@@ -4,7 +4,7 @@
 
 @section('content')
 
-    <div class="sm:ml-64 p-4 md:p-6 bg-gray-50 dark:bg-gray-900 font-sans antialiased">
+    <div class="sm:ml-64 p-4 md:p-6 bg-gray-50 dark:bg-gray-900 font-sans antialiased min-h-screen">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             <div
                 class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md border border-slate-500 transform transition duration-200 hover:-translate-y-0.5 hover:shadow-xl">

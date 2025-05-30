@@ -2,36 +2,36 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Penjualan extends Model
 {
-    use HasFactory;
-
     protected $table = 'penjualan';
     protected $primaryKey = 'PenjualanID';
-    public $timestamps = false;
+    public $incrementing = false;
+    protected $keyType = 'string';
+    public $timestamps = true;
 
     protected $fillable = [
-        'TanggalPenjualan',
-        'TotalHarga',
+        'PenjualanID',
         'PelangganID',
+        'TanggalPenjualan',
+        'TotalHarga'
     ];
 
-    protected $casts = [
-        'TanggalPenjualan' => 'datetime', // Ini PENTING!
-        'TotalHarga' => 'decimal:2',
-        'PelangganID' => 'integer',
-    ];
-
-    public function detailpenjualans(): HasMany
+    protected static function boot()
     {
-        return $this->hasMany(DetailPenjualan::class, 'PenjualanID', 'PenjualanID');
-    }
+        parent::boot();
 
+        static::creating(function ($model) {
+            if (empty($model->PenjualanID)) {
+                $lastPenjualan = self::orderBy('created_at', 'desc')->first();
+                $lastNumber = $lastPenjualan ? (int) str_replace('SALE-', '', $lastPenjualan->PenjualanID) : 0;
+                $model->PenjualanID = 'SALE-' . ($lastNumber + 1);
+            }
+        });
+    }
     public function pelanggan(): BelongsTo
     {
         return $this->belongsTo(Pelanggan::class, 'PelangganID', 'PelangganID');

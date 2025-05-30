@@ -82,10 +82,9 @@ class produkController extends Controller
                 'foto_produk' => 'nullable|image|max:102400',
             ]);
 
-            $filename = null;
+            $filename = uniqid() . time() . '.' . $request->file('foto_produk')->getClientOriginalExtension();
             if ($request->hasFile('foto_produk')) {
                 $file = $request->file('foto_produk');
-                $filename = time() . '.' . $file->getClientOriginalExtension();
                 $file->storeAs('public/produk', $filename);
                 $validatedData['foto_produk'] = $filename;
             }
