@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Detailpenjualan extends Model
 {
@@ -26,9 +27,7 @@ class Detailpenjualan extends Model
 
         static::creating(function ($model) {
             if (empty($model->DetailID)) {
-                $lastDetail = self::orderBy('created_at', 'desc')->first();
-                $lastNumber = $lastDetail ? (int) str_replace('SALE-INFO-', '', $lastDetail->DetailID) : 0;
-                $model->DetailID = 'SALE-INFO-' . ($lastNumber + 1);
+                $model->DetailID = 'SALE-INFO-' . (string) Str::uuid();
             }
         });
     }

@@ -4,10 +4,11 @@
 
 @section('content')
 
-    <div class="bg-white dark:bg-gray-900 flex h-full">
+    <div class="bg-white dark:bg-gray-900 flex h-full ">
         <div class="sm:ml-64 p-4 flex flex-1 overflow-hidden h-full">
             <main class="flex-1 flex flex-col md:flex-row overflow-hidden">
-                <div class="flex-1 overflow-y-scroll pr-4 pb-4" style="scrollbar-width: none; -ms-overflow-style: none;">
+                <div class="flex-1 max-h-screen overflow-y-scroll pr-4 pb-4"
+                    style="scrollbar-width: none; -ms-overflow-style: none;">
                     <h1 class="text-3xl font-semibold text-left my-4 text-gray-900 dark:text-white">Tambahkan Transaksi</h1>
 
                     <form class="flex items-center max-w-sm my-1.5">
@@ -102,7 +103,7 @@
                 </div>
 
                 <div id="bill-product"
-                    class="w-full h-fit md:w-lg px-4 py-8 bg-white dark:bg-gray-800 shadow-lg rounded-xl overflow-y-auto md:ml-4 flex-shrink-0">
+                    class="w-full h-screen md:w-lg px-4 py-8 bg-white dark:bg-gray-800 shadow-lg rounded-xl overflow-y-auto md:ml-4 flex-shrink-0">
                     <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">Your Cart Summary</h2>
 
                     <div class="mb-6">
@@ -219,7 +220,12 @@
         function proceedToCheckout() {
             const customerId = document.getElementById('customer').value;
             if (!customerId) {
-                alert('Silakan pilih pelanggan terlebih dahulu.');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Peringatan!',
+                    text: 'Silakan pilih pelanggan terlebih dahulu.',
+                    confirmButtonText: 'OK'
+                });
                 return;
             }
 
@@ -234,6 +240,18 @@
                 PelangganID: customerId,
                 items: items
             };
+
+            // Tampilkan loading
+            Swal.fire({
+                title: 'Memproses transaksi...',
+                text: 'Mohon tunggu sebentar.',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
 
             // Kirim data ke server
             fetch('http://127.0.0.1:8000/api/penjualan/store', {
@@ -250,14 +268,27 @@
                     return response.json();
                 })
                 .then(result => {
-                    alert('Transaksi berhasil disimpan!');
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: 'Transaksi berhasil disimpan!',
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Optional: Reset keranjang setelah berhasil
+                            // cart = {};
+                            // updateCartUI();
+                        }
+                    });
                     console.log('Berhasil:', result);
-                    // Kalau mau, kamu bisa reset keranjang di sini
-                    // cart = {};
-                    // updateCartUI();
                 })
                 .catch(error => {
-                    alert('Ada kesalahan, coba lagi ya.');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Ada kesalahan saat menyimpan transaksi. Silakan coba lagi.',
+                        confirmButtonText: 'OK'
+                    });
                     console.log('Error:', error);
                 });
         }

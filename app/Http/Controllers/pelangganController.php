@@ -14,9 +14,19 @@ class pelangganController extends Controller
 {
     //
 
-    public function index()
+    public function index(Request $request)
     {
-        $pelanggans = Pelanggan::all();
+        $query = Pelanggan::query();
+        
+        if ($request->has('search')) {
+            $searchTerm = $request->search;
+            $query->where('NamaPelanggan', 'like', '%' . $searchTerm . '%')
+                ->orWhere('Alamat', 'like', '%' . $searchTerm . '%')
+                ->orWhere('NomorTelepon', 'like', '%' . $searchTerm . '%');
+        }
+        
+        $pelanggans = $query->paginate(5);
+        
         return view('pages.pelanggan.list', compact('pelanggans'));
     }
 

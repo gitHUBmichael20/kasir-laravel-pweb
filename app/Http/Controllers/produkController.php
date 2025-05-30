@@ -24,7 +24,7 @@ class produkController extends Controller
                 
         }
 
-        $produks = $query->get();
+        $produks = $query->paginate(5);
 
         return view('pages.produk.list', compact('produks'));
     }

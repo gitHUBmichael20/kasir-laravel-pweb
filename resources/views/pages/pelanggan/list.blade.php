@@ -16,7 +16,7 @@
                 </button>
             </a>
 
-            <form class="flex items-center">
+            <form action="{{ route('pelanggan.all') }}" method="GET" class="flex items-center">
                 <label for="simple-search" class="sr-only">Search</label>
                 <div class="relative">
                     <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
@@ -24,13 +24,13 @@
                             xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
                             viewBox="0 0 24 24">
                             <path fill-rule="evenodd"
-                                d="M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm-2 9a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1a4 4 0 0 0-4-4h-4Z"
+                                d="M14 7h-4v3a1 1 0 0 1-2 0V7H6a1 1 0 0 0-.997.923l-.917 11.924A2 2 0 0 0 6.08 22h11.84a2 2 0 0 0 1.994-2.153l-.917-11.924A1 1 0 0 0 18 7h-2v3a1 1 0 1 1-2 0V7Zm-2-3a2 2 0 0 0-2 2v1H8V6a4 4 0 0 1 8 0v1h-2V6a2 2 0 0 0-2-2Z"
                                 clip-rule="evenodd" />
                         </svg>
                     </div>
                     <input type="text" id="simple-search"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Cari Nama Pelanggan..." required />
+                        placeholder="Cari Nama Pelanggan..." name="search" value="{{ request('search') }}" />
                 </div>
                 <button type="submit"
                     class="p-2.5 ms-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
@@ -41,6 +41,13 @@
                     </svg>
                     <span class="sr-only">Search</span>
                 </button>
+
+                @if (request('search'))
+                    <a href="{{ route('pelanggan.all') }}"
+                        class="ml-2 p-2.5 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg border border-gray-300 hover:bg-gray-300 focus:ring-4 focus:outline-none focus:ring-gray-100 dark:bg-gray-600 dark:text-white dark:hover:bg-gray-700 dark:focus:ring-gray-800">
+                        Reset
+                    </a>
+                @endif
             </form>
         </div>
 
@@ -120,18 +127,21 @@
                 </tbody>
             </table>
         </div>
+        <div class="mt-4">
+            {{ $pelanggans->links() }}
+        </div>
 
-        <!-- Empty State jika tidak ada produk -->
-            @if (count($pelanggans) == 0)
-                <div class="text-center py-16">
-                    <i class="fas fa-box-open text-6xl text-gray-400 dark:text-gray-500 mb-4"></i>
-                    <h3 class="text-xl font-semibold text-gray-600 dark:text-gray-300 mb-2">Tidak Ada Pelanggan</h3>
-                    <p class="text-gray-500 dark:text-gray-400">Belum ada Pelanggan yang tersedia saat ini.</p>
-                </div>
-            @endif
+        <!-- Empty State jika tidak ada Pelanggan -->
+        @if (count($pelanggans) == 0)
+            <div class="text-center py-16">
+                <i class="fas fa-box-open text-6xl text-gray-400 dark:text-gray-500 mb-4"></i>
+                <h3 class="text-xl font-semibold text-gray-600 dark:text-gray-300 mb-2">Tidak Ada Pelanggan</h3>
+                <p class="text-gray-500 dark:text-gray-400">Belum ada Pelanggan yang tersedia saat ini.</p>
+            </div>
+        @endif
 
     </div>
 
 @endsection
 
-@include('layout.tambah-transaksi')
+

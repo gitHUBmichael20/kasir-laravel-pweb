@@ -145,6 +145,9 @@
                 </table>
             </div>
 
+            <div class="mt-4">
+                {{ $produks->links() }}
+            </div>
 
             <!-- Empty State jika tidak ada produk -->
             @if (count($produks) == 0)
@@ -158,5 +161,3 @@
     </div>
 
 @endsection
-
-@include('layout.tambah-transaksi')

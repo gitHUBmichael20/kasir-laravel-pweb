@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Penjualan extends Model
 {
@@ -20,6 +21,10 @@ class Penjualan extends Model
         'TotalHarga'
     ];
 
+    protected $casts = [
+        'TanggalPenjualan' => 'date',
+    ];
+
     protected static function boot()
     {
         parent::boot();
@@ -32,8 +37,14 @@ class Penjualan extends Model
             }
         });
     }
+
     public function pelanggan(): BelongsTo
     {
         return $this->belongsTo(Pelanggan::class, 'PelangganID', 'PelangganID');
+    }
+
+    public function detailpenjualans(): HasMany
+    {
+        return $this->hasMany(Detailpenjualan::class, 'PenjualanID', 'PenjualanID');
     }
 }
